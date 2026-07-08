@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Interactive Hologram Display</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        html,body{
+
+            width:100%;
+            height:100%;
+            overflow:hidden;
+            background:#020611;
+
+            font-family:Arial,Helvetica,sans-serif;
+
+        }
+
+        canvas{
+
+            display:block;
+
+        }
+
+        /* Webcam */
+
+        #webcam{
+
+            position:fixed;
+
+            top:20px;
+
+            right:20px;
+
+            width:260px;
+
+            border-radius:15px;
+
+            border:2px solid #00d4ff;
+
+            z-index:100;
+
+        }
+
+        /* Hand Tracking Overlay */
+
+        #handCanvas{
+
+            position:fixed;
+
+            top:20px;
+
+            right:20px;
+
+            width:260px;
+
+            height:195px;
+
+            pointer-events:none;
+
+            z-index:101;
+
+        }
+
+    </style>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <!-- Webcam -->
+
+    <video
+
+        id="webcam"
+
+        autoplay
+
+        playsinline
+
+        muted>
+
+    </video>
+
+    <!-- Hand Tracking Overlay -->
+
+    <canvas id="handCanvas"></canvas>
+
+    <!-- MediaPipe -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+    <!-- Your Scripts -->
+
+    <script type="module" src="handTracking.js"></script>
+
+    <script type="module" src="display.js"></script>
+
+</body>
+
+</html>
