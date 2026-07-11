@@ -111,7 +111,10 @@ body{
     box-shadow:
         0 0 45px rgba(0,212,255,.20);
 
-    transition:.35s;
+    transition: transform .4s cubic-bezier(0.25, 1, 0.5, 1), 
+                box-shadow .4s cubic-bezier(0.25, 1, 0.5, 1), 
+                border-color .4s cubic-bezier(0.25, 1, 0.5, 1);
+    cursor: pointer;
 
 }
 
@@ -122,6 +125,32 @@ body{
     box-shadow:
         0 0 65px rgba(0,212,255,.45);
 
+}
+
+/* Premium Holographic Active Selection State */
+.card.selected {
+    transform: translateY(-8px) scale(1.03);
+    border-color: #00d4ff;
+    box-shadow: 
+        0 0 30px rgba(0, 212, 255, 0.4),
+        0 0 60px rgba(0, 212, 255, 0.2),
+        inset 0 0 20px rgba(0, 212, 255, 0.15);
+    animation: holographicPulse 2s infinite alternate ease-in-out;
+}
+
+@keyframes holographicPulse {
+    0% {
+        box-shadow: 
+            0 0 30px rgba(0, 212, 255, 0.4),
+            0 0 60px rgba(0, 212, 255, 0.2),
+            inset 0 0 20px rgba(0, 212, 255, 0.15);
+    }
+    100% {
+        box-shadow: 
+            0 0 40px rgba(0, 212, 255, 0.6),
+            0 0 80px rgba(0, 212, 255, 0.3),
+            inset 0 0 30px rgba(0, 212, 255, 0.25);
+    }
 }
 
 /* IMAGE */
