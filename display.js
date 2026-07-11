@@ -5,6 +5,7 @@
  */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 // ---------------- Initializing Shared Hand State ----------------
 window.handState = window.handState || {
@@ -43,6 +44,43 @@ const MODEL_CONFIGS = {
         maxRotationX: 0.8,
         minRotationY: -2.5,
         maxRotationY: 2.5
+    },
+    "bigben": {
+        zoomMinFactor: 1.0,
+        zoomMaxFactor: 3.5,
+        minRotationX: -0.3,
+        maxRotationX: 0.3,
+        minRotationY: -3.14,
+        maxRotationY: 3.14
+    },
+    "burj_khalifa": {
+        zoomMinFactor: 0.8,
+        zoomMaxFactor: 4.5,
+        cameraSafetyMargin: 0.5, // Slim structure allows tighter zoom clearances
+        customLightIntensity: 5.0, // Compensates for dark reflective PBR metals on this specific asset
+        scaleMultiplier: 3.2, // Boosts width visual mass to match the presentation scale of the Eiffel Tower
+        minRotationX: -0.2,
+        maxRotationX: 0.4,
+        minRotationY: -3.14,
+        maxRotationY: 3.14
+    },
+    "leaning_tower": {
+        // Leverages standard height calculation but sets a safe base clearance height
+        customTargetHeight: 1.5, 
+        // Amplifies the massive horizontal footprint so it spreads across the screen like the Sydney Opera House
+        scaleMultiplier: 4.5, 
+        // Allow zooming way out to capture the complete city scan layout
+        zoomMinFactor: 0.3, 
+        // Allow deep inspections into specific architectural elements
+        zoomMaxFactor: 5.5, 
+        // Tighter clearance bound so the camera can float close above the ground without clipping
+        cameraSafetyMargin: 0.2, 
+        // Subtly dampen hand rotation responsiveness so this large environment doesn't whip around dizzyingly
+        rotationScale: 0.45, 
+        minRotationX: -0.35,
+        maxRotationX: 0.35,
+        minRotationY: -3.14,
+        maxRotationY: 3.14
     }
 };
 
@@ -84,11 +122,6 @@ renderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(renderer.domElement);
 
 // ---------------- Dynamic Ambient & Orbiting Lights ----------------
-// Rebalanced from a saturated blue ambient + very intense cyan/magenta point
-// lights (which were strong enough to wash pale/white monuments toward cyan)
-// to a more neutral ambient and toned-down accent lights. Same lights, same
-// hues, same orbit motion — just weighted so true material color reads
-// through instead of being overpowered.
 const ambient = new THREE.AmbientLight(0x445566, 1.0);
 scene.add(ambient);
 const orbitLight1 = new THREE.PointLight(0x00ffff, 4, 30);
@@ -127,7 +160,12 @@ const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(particleSystem);
 
 // ---------------- Model Parsing Routine ----------------
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/");
+
 const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+
 let monument = null;
 let isInternalLoading = false; // Prevents race conditions during simultaneous dynamic requests
 
@@ -149,10 +187,6 @@ async function loadModel(modelName) {
         (gltf) => {
             const incomingMonument = gltf.scene;
 
-            // Materials are left exactly as authored in the GLB — original base
-            // color, textures, PBR maps (metalness/roughness/normal), and vertex
-            // colors all come through untouched.
-
             // Measure the model at its native, unscaled size FIRST.
             incomingMonument.scale.setScalar(1);
             incomingMonument.position.set(0, 0, 0);
@@ -164,11 +198,17 @@ async function loadModel(modelName) {
             box.getSize(size);
 
             // Normalized structural scaling applied perfectly across all future assets
-            const targetHeight = 5.0;
-            const scaleFactor = targetHeight / (size.y || 1.0);
+            const config = MODEL_CONFIGS[modelName];
+            const targetHeight = config && config.customTargetHeight ? config.customTargetHeight : 5.0;
+            let scaleFactor = targetHeight / (size.y || 1.0);
+
+            // Apply fine-tuned adjustment scalar if specified in the asset matrix mapping definitions
+            if (config && config.scaleMultiplier !== undefined) {
+                scaleFactor *= config.scaleMultiplier;
+            }
 
             // Apply scale, THEN derive position offsets in the same (scaled) units.
-            document.body.appendChild(renderer.domElement); // Retain original layout integrity
+            document.body.appendChild(renderer.domElement); 
             incomingMonument.scale.setScalar(scaleFactor);
             incomingMonument.position.x = -center.x * scaleFactor;
             incomingMonument.position.z = -center.z * scaleFactor;
@@ -176,27 +216,33 @@ async function loadModel(modelName) {
             const floorY = -box.min.y * scaleFactor - 1.0;
             incomingMonument.position.y = floorY;
 
-            // Cache the resting floor height once. The render loop uses this instead
-            // of recomputing a world-space bounding box every frame
+            // Cache the resting floor height once.
             incomingMonument.userData.floorY = floorY;
 
+            // Dynamic light calibration adjustments per model rules
+            if (config && config.customLightIntensity !== undefined) {
+                topLight.intensity = config.customLightIntensity;
+                ambient.intensity = config.customLightIntensity * 0.4;
+            } else {
+                topLight.intensity = 3.0;
+                ambient.intensity = 1.0;
+            }
+
             // ---- Safe zoom cap ----
-            const config = MODEL_CONFIGS[modelName];
             const activeSafetyMargin = config && config.cameraSafetyMargin !== undefined ? config.cameraSafetyMargin : CAMERA_SAFETY_MARGIN;
 
             const sphere = new THREE.Sphere();
-            box.getBoundingSphere(sphere); // computed on the unscaled box
+            box.getBoundingSphere(sphere); 
             const modelCenterWorld = new THREE.Vector3(
                 incomingMonument.position.x,
                 floorY + (size.y * scaleFactor) / 2,
                 incomingMonument.position.z
             );
             const cameraDistance = camera.position.distanceTo(modelCenterWorld);
-            const baseRadius = sphere.radius * scaleFactor; // bounding sphere radius at baseScale
+            const baseRadius = sphere.radius * scaleFactor; 
 
             const maxZoomFactor = (cameraDistance - activeSafetyMargin) / baseRadius;
             
-            // Set dynamic baseline limits based on individual properties or calculated safety dimensions
             const defaultMaxZoom = config && config.zoomMaxFactor ? config.zoomMaxFactor : ZOOM_MAX;
             const defaultMinZoom = config && config.zoomMinFactor ? config.zoomMinFactor : ZOOM_MIN;
             
@@ -207,13 +253,13 @@ async function loadModel(modelName) {
             targetTransform.scale = scaleFactor;
             currentTransform.scale = scaleFactor;
 
-            // Reset target rotations on hot-swaps to avoid transferring clamps downstream
+            // Reset target rotations on hot-swaps
             targetTransform.rotationX = 0;
             targetTransform.rotationY = 0;
             currentTransform.rotationX = 0;
             currentTransform.rotationY = 0;
 
-            // Clean up the previous model to free GPU memory now that the next one is ready
+            // Clean up the previous model to free GPU memory
             if (monument) {
                 scene.remove(monument);
                 monument.traverse((child) => {
@@ -230,7 +276,7 @@ async function loadModel(modelName) {
                 });
             }
 
-            // Bind the incoming asset to the active display slot
+            // Bind the incoming asset
             monument = incomingMonument;
             scene.add(monument);
 
@@ -271,11 +317,12 @@ function animate() {
                 targetTransform.rotationY = 0;
                 targetTransform.scale = baseScale;
             } else {
-                let rawRotationY = (state.x - 0.5) * 2.4;
-                let rawRotationX = -(state.y - 0.5) * 1.4;
-
-                // Apply specific bounding parameters conditionally if config restrictions exist
                 const currentConfig = MODEL_CONFIGS[activeModelName];
+                const rotMultiplier = currentConfig && currentConfig.rotationScale !== undefined ? currentConfig.rotationScale : 1.0;
+
+                let rawRotationY = (state.x - 0.5) * 2.4 * rotMultiplier;
+                let rawRotationX = -(state.y - 0.5) * 1.4 * rotMultiplier;
+
                 if (currentConfig) {
                     if (currentConfig.minRotationX !== undefined && currentConfig.minRotationX !== null) {
                         rawRotationX = Math.max(currentConfig.minRotationX, Math.min(currentConfig.maxRotationX, rawRotationX));
@@ -289,8 +336,6 @@ function animate() {
                 targetTransform.rotationX = rawRotationX;
 
                 if (state.pinch) {
-                    // Inverted signals: pinch strength close to 1.0 reduces target scale toward zoomMinForModel, 
-                    // while opening the hand (strength close to 0.0) scales up toward zoomMaxForModel.
                     const invertedStrength = 1.0 - state.pinchStrength;
                     const scaleTargetFactor = zoomMinForModel + (invertedStrength * (zoomMaxForModel - zoomMinForModel));
                     targetTransform.scale = baseScale * scaleTargetFactor;
@@ -299,7 +344,6 @@ function animate() {
                 }
             }
         }
-        // If a closed fist is active, targets stay put — rotation/zoom freezes in place.
     } else {
         let rawIdleY = targetTransform.rotationY + 0.005;
         let rawIdleX = Math.sin(elapsedTime * 0.4) * 0.2;
@@ -328,8 +372,6 @@ function animate() {
         monument.rotation.x = currentTransform.rotationX;
         monument.scale.setScalar(currentTransform.scale);
 
-        // Gentle float on top of the cached floor height — no per-frame bounding
-        // box recompute, so this no longer couples to rotation.
         const floorY = monument.userData.floorY ?? 0;
         monument.position.y = floorY + Math.sin(elapsedTime * 1.6) * 0.08;
     }

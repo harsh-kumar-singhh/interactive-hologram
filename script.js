@@ -48,7 +48,9 @@ const modelMetadata = {
     statue: { title: "Statue of Liberty Selected", icon: "🗽", displayName: "Statue of Liberty" },
     christ: { title: "Christ the Redeemer Selected", icon: "🇧🇷", displayName: "Christ the Redeemer" },
     arc: { title: "Arc de Triomphe Selected", icon: "🇫🇷", displayName: "Arc de Triomphe" },
-    opera: { title: "Sydney Opera House Selected", icon: "🇦🇺", displayName: "Sydney Opera House" }
+    opera: { title: "Sydney Opera House Selected", icon: "🇦🇺", displayName: "Sydney Opera House" },
+    burj_khalifa: { title: "Burj Khalifa Selected", icon: "🏙️", displayName: "Burj Khalifa" },
+    leaning_tower: { title: "Leaning Tower of Pisa Selected", icon: "🇮🇹", displayName: "Leaning Tower of Pisa" }
 };
 
 // --------------------------------------------------
