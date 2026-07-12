@@ -1,394 +1,568 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+/* ==========================================================================
+   COLOR PALETTE SPECIFICATION & SYSTEM ROOT
+   ========================================================================== */
+:root {
+    --bg-primary: #020611;
+    --bg-secondary: #071222;
+    --card-bg: rgba(18, 24, 40, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-primary: #00D4FF;
+    --accent-secondary: #3AE7FF;
+    --accent-success: #00FFB3;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B8C2D9;
+    --text-muted: #7F8CA5;
 }
 
-body{
-
-    font-family:Arial,Helvetica,sans-serif;
-
-    background:#05070d;
-
-    color:white;
-
-    overflow-x:hidden;
-
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Background */
-
-.background{
-
-    position:fixed;
-
-    inset:0;
-
-    background:radial-gradient(circle at top,#16386d,#05070d 65%);
-
-    z-index:-2;
-
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
 }
 
-.background::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:100%;
-
-    height:100%;
-
-    background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
-
-    background-size:40px 40px;
-
-    z-index:-1;
-
+/* ==========================================================================
+   IMMERSIVE BACKGROUND ENVIRONMENT WITH LUMINANCE MOTIONS
+   ========================================================================== */
+.background {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--bg-secondary) 0%, var(--bg-primary) 80%);
+    z-index: -2;
+    overflow: hidden;
 }
 
-/* Main */
-
-.container{
-
-    width:100%;
-
-    min-height:100vh;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    padding:40px 20px;
-
+.glow-radial-1 {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    top: -250px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, rgba(0, 212, 255, 0) 70%);
+    z-index: -1;
+    animation: pulseLight 8s infinite alternate ease-in-out;
 }
 
-.container h1{
-
-    font-size:72px;
-
-    font-weight:800;
-
-    text-shadow:0 0 25px #00c8ff;
-
-    margin-bottom:15px;
-
+.glow-radial-2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    bottom: -100px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(58, 231, 255, 0.04) 0%, rgba(58, 231, 255, 0) 70%);
+    z-index: -1;
 }
 
-.container p{
-
-    font-size:20px;
-
-    color:#bfc9d8;
-
-    margin-bottom:50px;
-
+@keyframes pulseLight {
+    0% { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
 }
 
-/* Card */
+.grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-size: 32px 32px;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    mask-image: radial-gradient(circle at 50% 35%, black 40%, transparent 90%);
+    -webkit-mask-image: radial-gradient(circle at 50% 35%, black 40%, transparent 90%);
+    z-index: -1;
+}
 
-.card{
+/* CSS Only Ambient Floating Particles */
+.particle {
+    position: absolute;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    opacity: 0.15;
+    filter: blur(1px);
+    animation: floatParticle 12s infinite linear;
+}
+.p1 { width: 3px; height: 3px; top: 20%; left: 15%; animation-duration: 14s; }
+.p2 { width: 4px; height: 4px; top: 65%; left: 80%; animation-duration: 18s; }
+.p3 { width: 2px; height: 2px; top: 45%; left: 45%; animation-duration: 10s; }
 
-    width:460px;
+@keyframes floatParticle {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    10% { opacity: 0.2; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+}
 
-    background:rgba(20,25,38,.95);
+/* ==========================================================================
+   SECTION 1: WELCOME SCREEN PRESENTATION ARCHITECTURE
+   ========================================================================== */
+.welcome-container {
+    position: fixed;
+    inset: 0;
+    background-color: var(--bg-primary);
+    background: radial-gradient(circle at 50% 40%, var(--bg-secondary) 0%, var(--bg-primary) 85%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 24px 40px 24px;
+    transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.6s ease;
+}
 
-    border:1px solid rgba(255,255,255,.12);
+/* Slide/Fade Trigger Mechanics */
+.welcome-container.hidden {
+    transform: translateY(-30px);
+    opacity: 0;
+    pointer-events: none;
+}
 
-    border-radius:28px;
+.welcome-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 380px;
+}
 
-    overflow:hidden;
+.welcome-hologram-icon {
+    font-size: 3.5rem;
+    margin-bottom: 24px;
+    display: inline-block;
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
+    animation: floatIcon 4s infinite alternate ease-in-out;
+}
 
-    backdrop-filter:blur(20px);
+@keyframes floatIcon {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
 
-    box-shadow:
-        0 0 45px rgba(0,212,255,.20);
+.welcome-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-align: center;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    background-clip: text; /* Add this line to clear the warning */
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
 
-    transition: transform .4s cubic-bezier(0.25, 1, 0.5, 1), 
-                box-shadow .4s cubic-bezier(0.25, 1, 0.5, 1), 
-                border-color .4s cubic-bezier(0.25, 1, 0.5, 1);
+.welcome-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 36px;
+}
+
+.instruction-card {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.instruction-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.instruction-item:last-child {
+    margin-bottom: 0;
+}
+
+.check-icon {
+    color: var(--accent-success);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-top: 1px;
+}
+
+.instruction-item p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.begin-btn {
+    width: 100%;
+    padding: 18px 28px;
+    border: none;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--bg-primary);
+    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
     cursor: pointer;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
 }
 
-.card:hover{
-
-    transform:translateY(-8px);
-
-    box-shadow:
-        0 0 65px rgba(0,212,255,.45);
-
+.begin-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
 }
 
-/* Premium Holographic Active Selection State */
-.card.selected {
-    transform: translateY(-8px) scale(1.03);
-    border-color: #00d4ff;
+.arrow-icon {
+    transition: transform 0.2s ease;
+}
+.begin-btn:hover .arrow-icon {
+    transform: translateX(3px);
+}
+
+.welcome-footer {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* ==========================================================================
+   SECTION 2: MAIN SELECTION STUDIO SCREEN CONTAINER
+   ========================================================================== */
+.container {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 36px 16px 140px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 32px;
+    width: 100%;
+}
+
+.hero-icon {
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+    display: inline-block;
+    filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.3));
+}
+
+.hero-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.hero-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding: 0 10px;
+}
+
+/* ==========================================================================
+   MONUMENT GRID LAYOUT (Strict Mobile-First 2-Column Pattern)
+   ========================================================================== */
+.monument-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   PREMIUM GLASSMORPHIC DECK ARCHEOLOGY
+   ========================================================================== */
+.card.monument-card {
+    position: relative;
+    width: 100% !important;
+    height: 185px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), 
+                border-color 0.35s ease, 
+                box-shadow 0.35s ease;
+    cursor: pointer;
+}
+
+.card.monument-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    color: transparent;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.card-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 35%, rgba(2, 6, 17, 0.95) 95%);
+    z-index: 1;
+}
+
+.card.monument-card .content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 14px;
+    z-index: 2;
+    text-align: left;
+}
+
+.country-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+    margin-bottom: 3px;
+}
+
+.card.monument-card .content h2 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    text-align: left;
+    margin-bottom: 0;
+}
+
+/* Float Selection Informer Tag */
+.selected-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 212, 255, 0.12);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: var(--accent-primary);
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ==========================================================================
+   ACTIVE SELECTION HOLOGRAPHIC MECHANICS
+   ========================================================================== */
+.card.monument-card.selected {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--accent-primary);
     box-shadow: 
-        0 0 30px rgba(0, 212, 255, 0.4),
-        0 0 60px rgba(0, 212, 255, 0.2),
-        inset 0 0 20px rgba(0, 212, 255, 0.15);
+        0 0 25px rgba(0, 212, 255, 0.3),
+        inset 0 0 15px rgba(0, 212, 255, 0.15);
     animation: holographicPulse 2s infinite alternate ease-in-out;
 }
 
+.card.monument-card.selected .selected-badge {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card.monument-card.selected .content h2 {
+    color: var(--accent-primary);
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+}
+
 @keyframes holographicPulse {
-    0% {
-        box-shadow: 
-            0 0 30px rgba(0, 212, 255, 0.4),
-            0 0 60px rgba(0, 212, 255, 0.2),
-            inset 0 0 20px rgba(0, 212, 255, 0.15);
+    0% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.25), inset 0 0 15px rgba(0, 212, 255, 0.15); }
+    100% { box-shadow: 0 0 35px rgba(0, 212, 255, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.2); }
+}
+
+/* Touch UI Scale Feedback Metrics */
+@media (hover: hover) {
+    .card.monument-card:hover:not(.selected) {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.18);
     }
-    100% {
-        box-shadow: 
-            0 0 40px rgba(0, 212, 255, 0.6),
-            0 0 80px rgba(0, 212, 255, 0.3),
-            inset 0 0 30px rgba(0, 212, 255, 0.25);
+    .card.monument-card:hover img {
+        transform: scale(1.04);
     }
 }
 
-/* IMAGE */
-
-.card img{
-
-    width:100%;
-
-    height:500px;
-
-    object-fit:cover;
-
-    object-position:center;
-
-    display:block;
-
+.card.monument-card:active {
+    transform: scale(0.97);
 }
 
-/* Content */
-
-.content{
-
-    padding:30px;
-
+/* ==========================================================================
+   STICKY MATTE CTA SYSTEM CONSOLE
+   ========================================================================== */
+.action-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 440px;
+    padding: 20px 16px 28px 16px;
+    background: linear-gradient(to top, var(--bg-primary) 80%, transparent 100%);
+    z-index: 10;
 }
 
-.content h2{
-
-    text-align:center;
-
-    font-size:42px;
-
-    margin-bottom:25px;
-
+#selectBtn {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 16px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--bg-primary);
+    background: linear-gradient(90deg, var(--accent-primary) 0%, #0077ff 100%);
+    box-shadow: 0 8px 24px rgba(0, 119, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
 }
 
-/* Button */
-
-button{
-
-    width:100%;
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    font-size:20px;
-
-    font-weight:bold;
-
-    color:white;
-
-    background:linear-gradient(90deg,#00c8ff,#0077ff);
-
-    transition:.3s;
-
+#selectBtn:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
 }
 
-button:hover{
-
-    transform:scale(1.03);
-
-    box-shadow:0 0 25px #00c8ff;
-
+/* ==========================================================================
+   VISIONOS BLUR PROGRESS MODAL SYSTEM
+   ========================================================================== */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(2, 6, 17, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 9999;
+    padding: 16px;
 }
 
-/* ---------------- MODAL ---------------- */
-
-.modal{
-
-    position:fixed;
-
-    inset:0;
-
-    display:none;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:rgba(0,0,0,.72);
-
-    backdrop-filter:blur(10px);
-
-    z-index:9999;
-
+.modal.active,
+.modal[style*="display: flex"] {
+    display: flex !important;
+    animation: modalFadeIn 0.3s ease forwards;
 }
 
-.modal.active{
-
-    display:flex;
-
-    animation:fade .35s ease;
-
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-@keyframes fade{
-
-from{
-
-opacity:0;
-
+.modal-box {
+    width: 100%;
+    max-width: 350px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px 20px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    animation: modalScaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-to{
-
-opacity:1;
-
+@keyframes modalScaleUp {
+    from { transform: scale(0.92) translateY(8px); }
+    to { transform: scale(1) translateY(0); }
 }
 
+.icon {
+    font-size: 2.8rem;
+    margin-bottom: 16px;
+    display: inline-block;
+    filter: drop-shadow(0 0 16px rgba(0, 200, 255, 0.4));
 }
 
-.modal-box{
-
-    width:420px;
-
-    background:#101624;
-
-    border:1px solid rgba(0,212,255,.35);
-
-    border-radius:22px;
-
-    padding:35px;
-
-    text-align:center;
-
-    box-shadow:0 0 40px rgba(0,212,255,.25);
-
+.modal-box h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+    color: var(--text-primary);
 }
 
-.icon{
-
-    font-size:60px;
-
-    margin-bottom:15px;
-
+.modal-box p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
 }
 
-.modal-box h2{
-
-    font-size:32px;
-
-    margin-bottom:15px;
-
+.progress {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
 }
 
-.modal-box p{
-
-    color:#d0d8e8;
-
-    margin-bottom:20px;
-
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+    border-radius: 10px;
+    transition: width 0.1s linear;
 }
 
-.progress{
-
-    width:100%;
-
-    height:12px;
-
-    background:#1d2636;
-
-    border-radius:30px;
-
-    overflow:hidden;
-
+.percent {
+    margin-top: 0;
+    color: var(--accent-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
-#progressBar{
-
-    width:0%;
-
-    height:100%;
-
-    background:linear-gradient(90deg,#00d4ff,#007bff);
-
-    transition:.2s;
-
-}
-
-.percent{
-
-    margin-top:12px;
-
-    color:#00d4ff;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-}
-
-.guide{
-
-    margin-top:20px;
-
-    margin-bottom:30px;
-
-    line-height:1.8;
-
-    color:#d7dce8;
-
-    font-size:18px;
-
-}
-
-#continueBtn{
-
-    width:100%;
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:12px;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    color:white;
-
-    background:linear-gradient(90deg,#00d4ff,#0078ff);
-
-    transition:.3s;
-
-}
-
-#continueBtn:hover{
-
-    transform:scale(1.03);
-
-    box-shadow:0 0 25px #00d4ff;
-
+/* ==========================================================================
+   WIDESCREEN TABLET SCALING RULE SET
+   ========================================================================== */
+@media (min-width: 441px) {
+    .container {
+        max-width: 680px;
+    }
+    .monument-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+    .action-footer {
+        max-width: 680px;
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(to top, rgba(2, 6, 17, 0.98) 85%, transparent 100%);
+        border: 1px solid var(--glass-border);
+        border-bottom: none;
+    }
 }
