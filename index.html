@@ -5,36 +5,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Interactive Hologram</title>
-    <!-- Premium Global Typography Layer -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="welcome-active">
 
-<!-- Premium Ambient Holographic Background Layer -->
+<!-- Premium Ambient Cosmic Holographic Environment Layer -->
 <div class="background">
     <div class="glow-radial-1"></div>
     <div class="glow-radial-2"></div>
+    <div class="glow-radial-3"></div>
     <div class="grid-overlay"></div>
+    <div class="scanline-overlay"></div>
+    
+    <!-- Immersive Animated Orbit Rings -->
+    <div class="holo-orbit-ring outer"></div>
+    <div class="holo-orbit-ring inner"></div>
+    
+    <!-- Interactive Background Pulse Core -->
+    <div class="holo-pulse-ring r1"></div>
+    <div class="holo-pulse-ring r2"></div>
+    
+    <!-- Floating CSS Particles -->
     <div class="particle p1"></div>
     <div class="particle p2"></div>
     <div class="particle p3"></div>
+    <div class="particle p4"></div>
 </div>
 
-<!-- ==========================================================================
-   SECTION 1: WELCOME SCREEN (Full Viewport Portal)
-   ========================================================================== -->
+<!-- SECTION 1: WELCOME SCREEN -->
 <div id="welcomeScreen" class="welcome-container">
     <div class="welcome-content">
-        <div class="welcome-hologram-icon">🪐</div>
+        <div class="welcome-icon-wrapper">
+            <div class="welcome-hologram-icon">🪐</div>
+            <div class="icon-glow-ring"></div>
+        </div>
         
         <h1 class="welcome-title">AI Hologram Exhibition</h1>
         <p class="welcome-subtitle">Explore iconic landmarks through an interactive holographic projection system.</p>
         
-        <!-- Instruction Insight Deck -->
         <div class="instruction-card">
             <div class="instruction-item">
                 <span class="check-icon">✓</span>
@@ -50,7 +62,7 @@
             </div>
         </div>
         
-        <button class="begin-btn" onclick="document.getElementById('welcomeScreen').classList.add('hidden');">
+        <button class="begin-btn" onclick="document.getElementById('welcomeScreen').classList.add('hidden'); document.body.classList.remove('welcome-active');">
             Begin Experience <span class="arrow-icon">→</span>
         </button>
     </div>
@@ -60,9 +72,7 @@
     </footer>
 </div>
 
-<!-- ==========================================================================
-   SECTION 2: MONUMENT SELECTION SCREEN
-   ========================================================================== -->
+<!-- SECTION 2: MONUMENT SELECTION SCREEN -->
 <div id="selectionScreen" class="container">
     <header class="hero-section">
         <div class="hero-icon">🌍</div>
@@ -70,10 +80,7 @@
         <p class="hero-subtitle">Choose a monument to project into the holographic display.</p>
     </header>
 
-    <!-- Monument Selection Grid Container -->
     <div class="monument-grid">
-        
-        <!-- Eiffel Tower Card (Selected by Default) -->
         <div class="card monument-card selected" data-model="eiffel">
             <img src="images/Eiffel_Tower.webp" alt="Eiffel Tower">
             <div class="card-gradient-overlay"></div>
@@ -84,7 +91,6 @@
             </div>
         </div>
 
-        <!-- Big Ben Card -->
         <div class="card monument-card" data-model="bigben">
             <img src="images/Big_Ben.webp" alt="Big Ben">
             <div class="card-gradient-overlay"></div>
@@ -95,7 +101,6 @@
             </div>
         </div>
 
-        <!-- Statue of Liberty Card -->
         <div class="card monument-card" data-model="statue">
             <img src="images/Statue_Of_Liberty.webp" alt="Statue of Liberty">
             <div class="card-gradient-overlay"></div>
@@ -106,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Christ the Redeemer Card -->
         <div class="card monument-card" data-model="christ">
             <img src="images/Christ_The_Redeemer.webp" alt="Christ the Redeemer">
             <div class="card-gradient-overlay"></div>
@@ -117,7 +121,6 @@
             </div>
         </div>
 
-        <!-- Arc de Triomphe Card -->
         <div class="card monument-card" data-model="arc">
             <img src="images/Arc_De_Triomphe.webp" alt="Arc de Triomphe">
             <div class="card-gradient-overlay"></div>
@@ -128,7 +131,6 @@
             </div>
         </div>
 
-        <!-- Sydney Opera House Card -->
         <div class="card monument-card" data-model="opera">
             <img src="images/Sydney_Opera_House.webp" alt="Sydney Opera House">
             <div class="card-gradient-overlay"></div>
@@ -139,7 +141,6 @@
             </div>
         </div>
 
-        <!-- Burj Khalifa Card -->
         <div class="card monument-card" data-model="burj_khalifa">
             <img src="images/Burj_Khalifa.webp" alt="Burj Khalifa">
             <div class="card-gradient-overlay"></div>
@@ -150,7 +151,6 @@
             </div>
         </div>
 
-        <!-- Leaning Tower of Pisa Card -->
         <div class="card monument-card" data-model="leaning_tower">
             <img src="images/Leaning_Tower.webp" alt="Leaning Tower of Pisa">
             <div class="card-gradient-overlay"></div>
@@ -160,16 +160,14 @@
                 <h2>Leaning Tower of Pisa</h2>
             </div>
         </div>
-
     </div>
 
-    <!-- Sticky Mobile CTA Console -->
     <div class="action-footer">
         <button id="selectBtn">Display Hologram</button>
     </div>
 </div>
 
-<!-- Loading Modal Panel Architecture -->
+<!-- SECTION 3: UPGRADED PROGRESS & SUCCESS MODALS -->
 <div id="loadingModal" class="modal">
     <div class="modal-box">
         <div class="icon" id="modalIcon">🗼</div>
@@ -182,7 +180,21 @@
     </div>
 </div>
 
+<div id="readyModal" class="modal">
+    <div class="modal-box">
+        <div class="icon">🎉</div>
+        <h2>Hologram Ready!</h2>
+        <p>Please proceed to the hologram display.</p>
+        <p>Use your hand to rotate, zoom and interact.</p>
+        <p class="enjoy-text">Enjoy the experience.</p>
+        
+        <button id="continueBtn" class="primary-modal-btn">
+            <span>Continue</span>
+            <span class="btn-arrow">→</span>
+        </button>
+    </div>
+</div>
+
 <script type="module" src="script.js"></script>
 </body>
-
 </html>

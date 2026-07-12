@@ -1,6 +1,3 @@
-/* ==========================================================================
-   COLOR PALETTE SPECIFICATION & SYSTEM ROOT
-   ========================================================================== */
 :root {
     --bg-primary: #020611;
     --bg-secondary: #071222;
@@ -29,96 +26,194 @@ body {
     min-height: 100vh;
 }
 
+/* Hardened Viewport Separation Layer */
+body.welcome-active {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 /* ==========================================================================
-   IMMERSIVE BACKGROUND ENVIRONMENT WITH LUMINANCE MOTIONS
+   IMMERSIVE BACKGROUND INTERACTION LABS
    ========================================================================== */
 .background {
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at 50% 0%, var(--bg-secondary) 0%, var(--bg-primary) 80%);
+    background: radial-gradient(circle at 50% 30%, var(--bg-secondary) 0%, var(--bg-primary) 85%);
     z-index: -2;
     overflow: hidden;
 }
 
 .glow-radial-1 {
     position: absolute;
-    width: 600px;
-    height: 600px;
-    top: -250px;
+    width: 700px;
+    height: 700px;
+    top: -300px;
     left: 50%;
     transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, rgba(0, 212, 255, 0) 70%);
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.12) 0%, rgba(0, 212, 255, 0) 70%);
     z-index: -1;
-    animation: pulseLight 8s infinite alternate ease-in-out;
+    animation: pulseLight 10s infinite alternate ease-in-out;
 }
 
 .glow-radial-2 {
     position: absolute;
+    width: 500px;
+    height: 500px;
+    bottom: -150px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(58, 231, 255, 0.05) 0%, rgba(58, 231, 255, 0) 70%);
+    z-index: -1;
+}
+
+.glow-radial-3 {
+    position: absolute;
     width: 400px;
     height: 400px;
-    bottom: -100px;
-    right: -100px;
-    background: radial-gradient(circle, rgba(58, 231, 255, 0.04) 0%, rgba(58, 231, 255, 0) 70%);
+    bottom: 20%;
+    left: -150px;
+    background: radial-gradient(circle, rgba(0, 255, 179, 0.02) 0%, rgba(0, 255, 179, 0) 75%);
     z-index: -1;
 }
 
 @keyframes pulseLight {
-    0% { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
-    100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    0% { opacity: 0.6; transform: translateX(-50%) scale(0.92); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.08); }
 }
 
 .grid-overlay {
     position: absolute;
     inset: 0;
-    background-size: 32px 32px;
+    background-size: 40px 40px;
     background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
-    mask-image: radial-gradient(circle at 50% 35%, black 40%, transparent 90%);
-    -webkit-mask-image: radial-gradient(circle at 50% 35%, black 40%, transparent 90%);
+        linear-gradient(to right, rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+    mask-image: radial-gradient(circle at 50% 35%, black 30%, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at 50% 35%, black 30%, transparent 85%);
+    z-index: -1;
+    animation: gridMovement 60s infinite linear;
+}
+
+@keyframes gridMovement {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 1000px; }
+}
+
+/* Premium Digital Scanline Layer */
+.scanline-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 24, 40, 0) 96%, rgba(0, 212, 255, 0.04) 98%, rgba(0, 212, 255, 0.04) 100%);
+    background-size: 100% 6px;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* Sophisticated Geometric Orbit Rings */
+.holo-orbit-ring {
+    position: absolute;
+    top: 28%;
+    left: 50%;
+    border: 1px dashed rgba(0, 212, 255, 0.08);
+    border-radius: 50%;
+    transform-origin: center center;
+    pointer-events: none;
     z-index: -1;
 }
 
-/* CSS Only Ambient Floating Particles */
+.holo-orbit-ring.outer {
+    width: 450px;
+    height: 450px;
+    transform: translate(-50%, -50%) rotate(0deg);
+    animation: orbitRotate 45s infinite linear;
+}
+
+.holo-orbit-ring.inner {
+    width: 280px;
+    height: 280px;
+    border: 1px solid rgba(0, 212, 255, 0.04);
+    transform: translate(-50%, -50%) rotate(0deg);
+    animation: orbitRotateReverse 30s infinite linear;
+}
+
+@keyframes orbitRotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes orbitRotateReverse {
+    from { transform: translate(-50%, -50%) rotate(360deg); }
+    to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* Smooth Wave Pulses */
+.holo-pulse-ring {
+    position: absolute;
+    top: 28%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    width: 320px;
+    height: 320px;
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.holo-pulse-ring.r1 { animation: wavePulse 8s infinite cubic-bezier(0.16, 1, 0.3, 1); }
+.holo-pulse-ring.r2 { animation: wavePulse 8s infinite cubic-bezier(0.16, 1, 0.3, 1); animation-delay: 4s; }
+
+@keyframes wavePulse {
+    0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+    15% { opacity: 0.5; }
+    70% { border-color: rgba(58, 231, 255, 0.03); }
+    100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+}
+
 .particle {
     position: absolute;
     background: var(--accent-primary);
     border-radius: 50%;
-    opacity: 0.15;
-    filter: blur(1px);
-    animation: floatParticle 12s infinite linear;
+    opacity: 0;
+    filter: blur(0.5px);
+    animation: floatParticle 15s infinite linear;
 }
-.p1 { width: 3px; height: 3px; top: 20%; left: 15%; animation-duration: 14s; }
-.p2 { width: 4px; height: 4px; top: 65%; left: 80%; animation-duration: 18s; }
-.p3 { width: 2px; height: 2px; top: 45%; left: 45%; animation-duration: 10s; }
+.p1 { width: 3px; height: 3px; top: 15%; left: 20%; animation-duration: 14s; }
+.p2 { width: 4px; height: 4px; top: 70%; left: 75%; animation-duration: 19s; }
+.p3 { width: 2px; height: 2px; top: 40%; left: 50%; animation-duration: 11s; }
+.p4 { width: 3px; height: 3px; top: 55%; left: 25%; animation-duration: 16s; }
 
 @keyframes floatParticle {
     0% { transform: translateY(0) scale(1); opacity: 0; }
-    10% { opacity: 0.2; }
-    90% { opacity: 0.2; }
-    100% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+    15% { opacity: 0.25; }
+    85% { opacity: 0.25; }
+    100% { transform: translateY(-100px) scale(0.7); opacity: 0; }
 }
 
 /* ==========================================================================
-   SECTION 1: WELCOME SCREEN PRESENTATION ARCHITECTURE
+   WELCOME SCREEN LAYOUT & SCROLL LOCK
    ========================================================================== */
 .welcome-container {
     position: fixed;
     inset: 0;
     background-color: var(--bg-primary);
-    background: radial-gradient(circle at 50% 40%, var(--bg-secondary) 0%, var(--bg-primary) 85%);
+    background: radial-gradient(circle at 50% 30%, var(--bg-secondary) 0%, var(--bg-primary) 90%);
     z-index: 1000;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 60px 24px 40px 24px;
-    transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.6s ease;
+    padding: 50px 24px 36px 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.65s ease;
 }
 
-/* Slide/Fade Trigger Mechanics */
 .welcome-container.hidden {
-    transform: translateY(-30px);
+    transform: scale(1.03);
     opacity: 0;
     pointer-events: none;
 }
@@ -131,31 +226,55 @@ body {
     align-items: center;
     width: 100%;
     max-width: 380px;
+    margin: auto 0;
+}
+
+.welcome-icon-wrapper {
+    position: relative;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .welcome-hologram-icon {
-    font-size: 3.5rem;
-    margin-bottom: 24px;
-    display: inline-block;
-    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
-    animation: floatIcon 4s infinite alternate ease-in-out;
+    font-size: 3.8rem;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.6));
+    animation: floatIcon 4.5s infinite alternate ease-in-out;
+}
+
+.icon-glow-ring {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
+    z-index: 1;
+    animation: auraPulse 3s infinite alternate ease-in-out;
 }
 
 @keyframes floatIcon {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-8px); }
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-10px) rotate(3deg); }
+}
+
+@keyframes auraPulse {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    100% { transform: scale(1.3); opacity: 1; }
 }
 
 .welcome-title {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     text-align: center;
     background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
     -webkit-background-clip: text;
-    background-clip: text; /* Add this line to clear the warning */
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .welcome-subtitle {
@@ -168,20 +287,21 @@ body {
 
 .instruction-card {
     width: 100%;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(18, 24, 40, 0.4);
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 40px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    border-radius: 22px;
+    padding: 22px;
+    margin-bottom: 38px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
 .instruction-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 16px;
 }
 
 .instruction-item:last-child {
@@ -192,14 +312,14 @@ body {
     color: var(--accent-success);
     font-weight: 700;
     font-size: 0.95rem;
-    margin-top: 1px;
+    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(0, 255, 179, 0.4);
 }
 
 .instruction-item p {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    line-height: 1.4;
-    font-weight: 400;
+    line-height: 1.45;
 }
 
 .begin-btn {
@@ -212,7 +332,7 @@ body {
     font-weight: 600;
     color: var(--bg-primary);
     background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-    box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35);
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -223,14 +343,14 @@ body {
 
 .begin-btn:active {
     transform: scale(0.97);
-    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
 }
 
 .arrow-icon {
     transition: transform 0.2s ease;
 }
 .begin-btn:hover .arrow-icon {
-    transform: translateX(3px);
+    transform: translateX(4px);
 }
 
 .welcome-footer {
@@ -239,10 +359,11 @@ body {
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-align: center;
+    margin-top: 20px;
 }
 
 /* ==========================================================================
-   SECTION 2: MAIN SELECTION STUDIO SCREEN CONTAINER
+   SECTION 2: SELECTION SCREEN STUDIO
    ========================================================================== */
 .container {
     width: 100%;
@@ -282,9 +403,6 @@ body {
     padding: 0 10px;
 }
 
-/* ==========================================================================
-   MONUMENT GRID LAYOUT (Strict Mobile-First 2-Column Pattern)
-   ========================================================================== */
 .monument-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr);
@@ -293,7 +411,7 @@ body {
 }
 
 /* ==========================================================================
-   PREMIUM GLASSMORPHIC DECK ARCHEOLOGY
+   MONUMENT GLASSMORPHIC CARDS
    ========================================================================== */
 .card.monument-card {
     position: relative;
@@ -359,7 +477,6 @@ body {
     margin-bottom: 0;
 }
 
-/* Float Selection Informer Tag */
 .selected-badge {
     position: absolute;
     top: 10px;
@@ -379,9 +496,7 @@ body {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* ==========================================================================
-   ACTIVE SELECTION HOLOGRAPHIC MECHANICS
-   ========================================================================== */
+/* Active Highlight Elements */
 .card.monument-card.selected {
     transform: translateY(-2px) scale(1.02);
     border-color: var(--accent-primary);
@@ -406,7 +521,6 @@ body {
     100% { box-shadow: 0 0 35px rgba(0, 212, 255, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.2); }
 }
 
-/* Touch UI Scale Feedback Metrics */
 @media (hover: hover) {
     .card.monument-card:hover:not(.selected) {
         transform: translateY(-4px);
@@ -422,7 +536,7 @@ body {
 }
 
 /* ==========================================================================
-   STICKY MATTE CTA SYSTEM CONSOLE
+   STICKY MATTE CTA BUTTON
    ========================================================================== */
 .action-footer {
     position: fixed;
@@ -457,7 +571,7 @@ body {
 }
 
 /* ==========================================================================
-   VISIONOS BLUR PROGRESS MODAL SYSTEM
+   PROGRESS & NOTIFICATION MODALS
    ========================================================================== */
 .modal {
     position: fixed;
@@ -518,7 +632,15 @@ body {
 .modal-box p {
     font-size: 0.88rem;
     color: var(--text-secondary);
-    margin-bottom: 24px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.enjoy-text {
+    margin-bottom: 22px !important;
+    opacity: 0.9;
+    font-weight: 500;
+    color: var(--accent-secondary) !important;
 }
 
 .progress {
@@ -528,6 +650,7 @@ body {
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 #progressBar {
@@ -548,7 +671,53 @@ body {
 }
 
 /* ==========================================================================
-   WIDESCREEN TABLET SCALING RULE SET
+   UPGRADED MODAL CONTINUE BUTTON
+   ========================================================================== */
+.primary-modal-btn {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--bg-primary);
+    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    box-shadow: 0 4px 16px rgba(0, 212, 255, 0.25);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), 
+                box-shadow 0.25s ease, 
+                background 0.25s ease;
+}
+
+.primary-modal-btn .btn-arrow {
+    font-size: 1.05rem;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@media (hover: hover) {
+    .primary-modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.45), 0 6px 20px rgba(0, 212, 255, 0.3);
+        background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--accent-success) 100%);
+    }
+    
+    .primary-modal-btn:hover .btn-arrow {
+        transform: translateX(3px);
+    }
+}
+
+.primary-modal-btn:active {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* ==========================================================================
+   TABLET RESPONSIVE CONSTRAINTS
    ========================================================================== */
 @media (min-width: 441px) {
     .container {

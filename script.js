@@ -132,19 +132,17 @@ button.addEventListener("click", async () => {
             status.innerHTML = "✅ Projection Ready";
 
             setTimeout(() => {
+                // UPGRADED TO USE THE NEW GLOWING NEON BUTTON TEMPLATE
                 modalBox.innerHTML = `
                 <div class="icon">🎉</div>
                 <h2>Hologram Ready!</h2>
-                <p class="guide">
-                Please proceed to the hologram display.
-                <br><br>
-                Use your hand to rotate,
-                zoom and interact.
-                <br><br>
-                Enjoy the experience.
-                </p>
-                <button id="continueBtn">
-                Continue →
+                <p>Please proceed to the hologram display.</p>
+                <p>Use your hand to rotate, zoom and interact.</p>
+                <p class="enjoy-text">Enjoy the experience.</p>
+                
+                <button id="continueBtn" class="primary-modal-btn">
+                    <span>Continue</span>
+                    <span class="btn-arrow">→</span>
                 </button>
                 `;
 
