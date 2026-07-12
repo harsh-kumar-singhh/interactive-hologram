@@ -54,21 +54,84 @@ if (EXHIBITION_MODE) {
 }
 
 // -----------------------------------------------------------------
-// LIGHT TRACKING FILTER
-// Kept minimal and reliable: a fast position smoother to knock down
-// pixel-level jitter, plus pinch hysteresis to stop the pinch flag
-// flickering right at the threshold. Nothing here adds meaningful
-// latency, and gesture booleans (open palm / closed fist) stay raw
-// so they always respond immediately.
+// ONE EURO FILTER
+// A speed-adaptive low-pass filter (Casiez et al.) — instead of a single
+// fixed smoothing factor, it drops its cutoff frequency when the signal is
+// nearly still (crushing pixel jitter) and raises it as speed increases
+// (so a real, fast hand motion is followed with almost no added lag).
+// This is what lets us fix "tiny movements shouldn't move the model" and
+// "fast movement shouldn't feel laggy" at the same time — a fixed alpha
+// can only ever pick one side of that tradeoff.
+// Frame-rate independent: driven by wall-clock dt, not by tick count.
+// -----------------------------------------------------------------
+class OneEuroFilter {
+    constructor(minCutoff = 1.0, beta = 0.0, dCutoff = 1.0) {
+        this.minCutoff = minCutoff; // Lower = smoother when the hand is nearly still
+        this.beta = beta;           // Higher = less lag once the hand starts moving fast
+        this.dCutoff = dCutoff;
+        this.xPrev = null;
+        this.dxPrev = 0;
+        this.lastTime = null;
+    }
+
+    static smoothingAlpha(cutoff, dt) {
+        const tau = 1.0 / (2 * Math.PI * cutoff);
+        return 1.0 / (1.0 + tau / dt);
+    }
+
+    filter(x, timestamp = performance.now()) {
+        if (this.lastTime === null) {
+            this.lastTime = timestamp;
+            this.xPrev = x;
+            this.dxPrev = 0;
+            return x;
+        }
+
+        let dt = (timestamp - this.lastTime) / 1000;
+        if (dt <= 0) dt = 1 / 60; // Guard against duplicate/out-of-order timestamps
+        this.lastTime = timestamp;
+
+        // Estimate signal speed, itself lightly filtered to avoid noise driving the cutoff around
+        const dx = (x - this.xPrev) / dt;
+        const aD = OneEuroFilter.smoothingAlpha(this.dCutoff, dt);
+        const dxHat = this.dxPrev + aD * (dx - this.dxPrev);
+
+        // Adaptive cutoff: widens (less smoothing) as estimated speed increases
+        const cutoff = this.minCutoff + this.beta * Math.abs(dxHat);
+        const a = OneEuroFilter.smoothingAlpha(cutoff, dt);
+        const xHat = this.xPrev + a * (x - this.xPrev);
+
+        this.xPrev = xHat;
+        this.dxPrev = dxHat;
+        return xHat;
+    }
+
+    // Snap instantly to a value with no smoothing — used on hand reacquire so
+    // there's no "catch-up" glide when the hand reappears somewhere new.
+    reset(x) {
+        this.xPrev = x;
+        this.dxPrev = 0;
+        this.lastTime = null;
+    }
+}
+
+// -----------------------------------------------------------------
+// TRACKING FILTER
+// One filter instance per signal, each tuned for what that signal is used for:
+//  - position (x/y)   -> drives rotation: needs to feel immediate, some jitter cut
+//  - pinch distance    -> drives zoom: needs to feel precise/stable above all
+//  - finger extension -> drives open-palm/closed-fist: a fairly deliberate,
+//                         binary gesture, so a touch more smoothing is fine
+// Pinch (and now open palm / closed fist) additionally use hysteresis on top
+// of their filtered signal, so the booleans themselves don't flicker right at
+// the threshold boundary.
 // -----------------------------------------------------------------
 const TrackingFilter = {
-    filteredX: 0.5,
-    filteredY: 0.5,
     wasDetected: false,
 
     TRACKING_GRACE_PERIOD: 500, // Bridges brief single-frame dropouts so tracking doesn't "randomly" appear lost
 
-    // Hysteresis band for the pinch on/off flag only — keeps the boolean stable near the threshold.
+    // Hysteresis band for the pinch on/off flag — keeps the boolean stable near the threshold.
     PINCH_START_THRESH: 0.32,
     PINCH_END_THRESH: 0.44,
 
@@ -77,24 +140,50 @@ const TrackingFilter = {
     // over a tiny finger movement — this keeps zoom smooth and predictable.
     PINCH_STRENGTH_REFERENCE: 0.42,
 
-    OPEN_PALM_MIN_EXT: 2.35,
-    CLOSED_FIST_MAX_EXT: 1.25,
+    // Hysteresis bands for open palm / closed fist, mirroring the pinch approach above,
+    // so these booleans no longer flicker for a hand resting right at the boundary.
+    OPEN_PALM_ENTER_EXT: 2.35,
+    OPEN_PALM_EXIT_EXT: 2.05,
+    CLOSED_FIST_ENTER_EXT: 1.25,
+    CLOSED_FIST_EXIT_EXT: 1.55,
+
+    // One filter per tracked signal.
+    positionFilterX: new OneEuroFilter(1.0, 0.7, 1.0),
+    positionFilterY: new OneEuroFilter(1.0, 0.7, 1.0),
+    pinchDistFilter: new OneEuroFilter(0.8, 0.4, 1.0),
+    extensionFilter: new OneEuroFilter(1.0, 0.3, 1.0),
 
     /**
-     * Fast exponential smoothing for fingertip position. Snaps immediately on
-     * reacquire (no catch-up lag when a hand reappears somewhere new) and
-     * smooths only while tracking continuously.
+     * Filters fingertip position. Snaps immediately on reacquire (no catch-up
+     * lag when a hand reappears somewhere new) and smooths adaptively while
+     * tracking continuously.
      */
-    processKinematics(rawX, rawY, justAcquired) {
+    processPosition(rawX, rawY, justAcquired, now) {
         if (justAcquired) {
-            this.filteredX = rawX;
-            this.filteredY = rawY;
-        } else {
-            const alpha = 0.5; // Fast enough to feel immediate, still knocks down pixel jitter
-            this.filteredX += alpha * (rawX - this.filteredX);
-            this.filteredY += alpha * (rawY - this.filteredY);
+            this.positionFilterX.reset(rawX);
+            this.positionFilterY.reset(rawY);
+            return { x: rawX, y: rawY };
         }
-        return { x: this.filteredX, y: this.filteredY };
+        return {
+            x: this.positionFilterX.filter(rawX, now),
+            y: this.positionFilterY.filter(rawY, now)
+        };
+    },
+
+    processPinchDistance(rawDist, justAcquired, now) {
+        if (justAcquired) {
+            this.pinchDistFilter.reset(rawDist);
+            return rawDist;
+        }
+        return this.pinchDistFilter.filter(rawDist, now);
+    },
+
+    processExtension(rawExt, justAcquired, now) {
+        if (justAcquired) {
+            this.extensionFilter.reset(rawExt);
+            return rawExt;
+        }
+        return this.extensionFilter.filter(rawExt, now);
     }
 };
 
@@ -117,22 +206,29 @@ function analyzeGestures(landmarks) {
     const RING_TIP = 16;
     const PINKY_TIP = 20;
 
+    const now = performance.now();
+    const justAcquired = !TrackingFilter.wasDetected;
+
     // Calculate a stable hand dimension scale using the distance from Wrist to Index Finger root
     const handScale = getDistance(landmarks[WRIST], landmarks[INDEX_MCP]);
     if (handScale === 0) return;
 
-    // Pinch evaluation: Calculate relative distance between thumb and index finger tip
+    // Pinch evaluation: Calculate relative distance between thumb and index finger tip,
+    // then run it through the One Euro filter before it drives anything — this is what
+    // makes pinch-to-zoom feel precise instead of twitchy, since both the hysteresis
+    // boundary check AND the continuous zoom amount now read a stable signal.
     const rawPinchDist = getDistance(landmarks[THUMB_TIP], landmarks[INDEX_TIP]);
     const normalizedPinchDist = rawPinchDist / handScale;
+    const filteredPinchDist = TrackingFilter.processPinchDistance(normalizedPinchDist, justAcquired, now);
 
-    // Hysteresis for the boolean pinch flag only, to stop it flickering at the edge
+    // Hysteresis for the boolean pinch flag, evaluated against the filtered distance.
     let currentlyPinching = window.handState.pinch;
     if (currentlyPinching) {
-        if (normalizedPinchDist > TrackingFilter.PINCH_END_THRESH) {
+        if (filteredPinchDist > TrackingFilter.PINCH_END_THRESH) {
             currentlyPinching = false;
         }
     } else {
-        if (normalizedPinchDist < TrackingFilter.PINCH_START_THRESH) {
+        if (filteredPinchDist < TrackingFilter.PINCH_START_THRESH) {
             currentlyPinching = true;
         }
     }
@@ -140,7 +236,7 @@ function analyzeGestures(landmarks) {
     // Continuous zoom strength uses its own wide, stable range — independent
     // of the narrow hysteresis band above — so zoom feels smooth, not twitchy.
     const ref = TrackingFilter.PINCH_STRENGTH_REFERENCE;
-    const pinchStrength = Math.max(0, Math.min(1, (ref - normalizedPinchDist) / ref));
+    const pinchStrength = Math.max(0, Math.min(1, (ref - filteredPinchDist) / ref));
 
     // Measure overall finger extension vectors away from the wrist anchor
     const dIndex = getDistance(landmarks[INDEX_TIP], landmarks[WRIST]);
@@ -148,16 +244,31 @@ function analyzeGestures(landmarks) {
     const dRing = getDistance(landmarks[RING_TIP], landmarks[WRIST]);
     const dPinky = getDistance(landmarks[PINKY_TIP], landmarks[WRIST]);
 
-    const avgExtension = (dIndex + dMiddle + dRing + dPinky) / (4 * handScale);
+    const rawAvgExtension = (dIndex + dMiddle + dRing + dPinky) / (4 * handScale);
+    const avgExtension = TrackingFilter.processExtension(rawAvgExtension, justAcquired, now);
 
-    // Differentiate states clearly via calculated dimension thresholds
-    const isOpenPalm = avgExtension > TrackingFilter.OPEN_PALM_MIN_EXT;
-    const isClosedFist = avgExtension < TrackingFilter.CLOSED_FIST_MAX_EXT;
+    // Hysteresis for open palm / closed fist, mirroring the pinch flag above, so a hand
+    // resting right at the boundary no longer flickers between states.
+    let isOpenPalm = window.handState.openPalm;
+    if (isOpenPalm) {
+        if (avgExtension < TrackingFilter.OPEN_PALM_EXIT_EXT) isOpenPalm = false;
+    } else {
+        if (avgExtension > TrackingFilter.OPEN_PALM_ENTER_EXT) isOpenPalm = true;
+    }
 
-    // Extract raw positions using Index Finger Tip landmark, lightly smoothed
+    let isClosedFist = window.handState.closedFist;
+    if (isClosedFist) {
+        if (avgExtension > TrackingFilter.CLOSED_FIST_EXIT_EXT) isClosedFist = false;
+    } else {
+        if (avgExtension < TrackingFilter.CLOSED_FIST_ENTER_EXT) isClosedFist = true;
+    }
+    // These two are mutually exclusive by construction (the enter thresholds don't overlap),
+    // but guard against any edge case so the model never reads both flags true at once.
+    if (isOpenPalm && isClosedFist) isClosedFist = false;
+
+    // Extract raw positions using Index Finger Tip landmark, filtered for stability
     const finger = landmarks[INDEX_TIP];
-    const justAcquired = !TrackingFilter.wasDetected;
-    const smoothPosition = TrackingFilter.processKinematics(finger.x, finger.y, justAcquired);
+    const smoothPosition = TrackingFilter.processPosition(finger.x, finger.y, justAcquired, now);
     TrackingFilter.wasDetected = true;
 
     // Atomically stream updates straight into global space
