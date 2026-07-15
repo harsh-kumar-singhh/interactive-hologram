@@ -50,7 +50,12 @@ const modelMetadata = {
     arc: { title: "Arc de Triomphe Selected", icon: "🇫🇷", displayName: "Arc de Triomphe" },
     opera: { title: "Sydney Opera House Selected", icon: "🇦🇺", displayName: "Sydney Opera House" },
     burj_khalifa: { title: "Burj Khalifa Selected", icon: "🏙️", displayName: "Burj Khalifa" },
-    leaning_tower: { title: "Leaning Tower of Pisa Selected", icon: "🇮🇹", displayName: "Leaning Tower of Pisa" }
+    leaning_tower: { title: "Leaning Tower of Pisa Selected", icon: "🇮🇹", displayName: "Leaning Tower of Pisa" },
+    lotus_temple: { title: "Lotus Temple Selected", icon: "🪷", displayName: "Lotus Temple" },
+    atlantis_the_palm: { title: "Atlantis The Palm Selected", icon: "🏝️", displayName: "Atlantis The Palm" },
+    dubai_museum_of_the_future: { title: "Museum of the Future Selected", icon: "✨", displayName: "Museum of the Future" },
+    gardens_by_the_bay_test: { title: "Gardens by the Bay Selected", icon: "🌳", displayName: "Gardens by the Bay" },
+    saint_basils_cathedral: { title: "Saint Basil's Cathedral Selected", icon: "🏰", displayName: "Saint Basil's Cathedral" }
 };
 
 // --------------------------------------------------
