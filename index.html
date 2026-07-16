@@ -1,251 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Interactive Hologram</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body class="welcome-active">
+  <body class="welcome-active">
+    <!-- Premium Ambient Cosmic Holographic Environment Layer -->
+    <div class="background">
+      <div class="glow-radial-1"></div>
+      <div class="glow-radial-2"></div>
+      <div class="glow-radial-3"></div>
+      <div class="grid-overlay"></div>
+      <div class="scanline-overlay"></div>
 
-<!-- Premium Ambient Cosmic Holographic Environment Layer -->
-<div class="background">
-    <div class="glow-radial-1"></div>
-    <div class="glow-radial-2"></div>
-    <div class="glow-radial-3"></div>
-    <div class="grid-overlay"></div>
-    <div class="scanline-overlay"></div>
-    
-    <!-- Immersive Animated Orbit Rings -->
-    <div class="holo-orbit-ring outer"></div>
-    <div class="holo-orbit-ring inner"></div>
-    
-    <!-- Interactive Background Pulse Core -->
-    <div class="holo-pulse-ring r1"></div>
-    <div class="holo-pulse-ring r2"></div>
-    
-    <!-- Floating CSS Particles -->
-    <div class="particle p1"></div>
-    <div class="particle p2"></div>
-    <div class="particle p3"></div>
-    <div class="particle p4"></div>
-</div>
+      <!-- Immersive Animated Orbit Rings -->
+      <div class="holo-orbit-ring outer"></div>
+      <div class="holo-orbit-ring inner"></div>
 
-<!-- SECTION 1: WELCOME SCREEN -->
-<div id="welcomeScreen" class="welcome-container">
-    <div class="welcome-content">
+      <!-- Interactive Background Pulse Core -->
+      <div class="holo-pulse-ring r1"></div>
+      <div class="holo-pulse-ring r2"></div>
+
+      <!-- Floating CSS Particles -->
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+    </div>
+
+    <!-- SECTION 1: WELCOME SCREEN -->
+    <div id="welcomeScreen" class="welcome-container">
+      <div class="welcome-content">
         <div class="welcome-icon-wrapper">
-            <div class="welcome-hologram-icon">🪐</div>
-            <div class="icon-glow-ring"></div>
+          <div class="welcome-hologram-icon">🪐</div>
+          <div class="icon-glow-ring"></div>
         </div>
-        
-        <h1 class="welcome-title">AI Hologram Exhibition</h1>
-        <p class="welcome-subtitle">Explore iconic landmarks through an interactive holographic projection system.</p>
-        
-        <div class="instruction-card">
-            <div class="instruction-item">
-                <span class="check-icon">✓</span>
-                <p>Select a monument</p>
-            </div>
-            <div class="instruction-item">
-                <span class="check-icon">✓</span>
-                <p>Display it instantly</p>
-            </div>
-            <div class="instruction-item">
-                <span class="check-icon">✓</span>
-                <p>Use hand gestures to interact with the hologram</p>
-            </div>
-        </div>
-        
-        <button class="begin-btn" onclick="document.getElementById('welcomeScreen').classList.add('hidden'); document.body.classList.remove('welcome-active');">
-            Begin Experience <span class="arrow-icon">→</span>
+
+        <h1 class="welcome-title">BGS Interactive AI Hologram Exhibition</h1>
+        <p class="welcome-subtitle">Experience History. Discover Prehistory.</p>
+        <p class="welcome-caption">
+          AI Powered • Gesture Controlled • Hands-Free Experience
+        </p>
+
+        <button
+          id="beginBtn"
+          class="begin-btn"
+          onclick="
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.body.classList.remove('welcome-active');
+            document
+              .getElementById('categoryScreen')
+              .classList.remove('hidden');
+          "
+        >
+          Enter Exhibition <span class="arrow-icon">→</span>
         </button>
-    </div>
-    
-    <footer class="welcome-footer">
-        Developed for Interactive AI Hologram Exhibition
-    </footer>
-</div>
-
-<!-- SECTION 2: MONUMENT SELECTION SCREEN -->
-<div id="selectionScreen" class="container">
-    <header class="hero-section">
-        <div class="hero-icon">🌍</div>
-        <h1 class="hero-title">AI Hologram Exhibition</h1>
-        <p class="hero-subtitle">Choose a monument to project into the holographic display.</p>
-    </header>
-
-    <div class="monument-grid">
-        <div class="card monument-card selected" data-model="eiffel">
-            <img src="images/Eiffel_Tower.webp" alt="Eiffel Tower">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇫🇷 France</span>
-                <h2>Eiffel Tower</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="bigben">
-            <img src="images/Big_Ben.webp" alt="Big Ben">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇬🇧 United Kingdom</span>
-                <h2>Big Ben</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="statue">
-            <img src="images/Statue_Of_Liberty.webp" alt="Statue of Liberty">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇺🇸 United States</span>
-                <h2>Statue of Liberty</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="christ">
-            <img src="images/christ.webp" alt="Christ the Redeemer">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇧🇷 Brazil</span>
-                <h2>Christ the Redeemer</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="arc">
-            <img src="images/Arc_De_Triomphe.webp" alt="Arc de Triomphe">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇫🇷 France</span>
-                <h2>Arc de Triomphe</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="opera">
-            <img src="images/opera.webp" alt="Sydney Opera House">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇦🇺 Australia</span>
-                <h2>Sydney Opera House</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="burj_khalifa">
-            <img src="images/Burj_Khalifa.webp" alt="Burj Khalifa">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇦🇪 UAE</span>
-                <h2>Burj Khalifa</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="leaning_tower">
-            <img src="images/Leaning_Tower.webp" alt="Leaning Tower of Pisa">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇮🇹 Italy</span>
-                <h2>Leaning Tower of Pisa</h2>
-            </div>
-        </div>
-        
-        <!-- New Monuments -->
-        <div class="card monument-card" data-model="lotus_temple">
-            <img src="images/lotus.webp" alt="Lotus Temple">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇮🇳 India</span>
-                <h2>Lotus Temple</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="atlantis_the_palm">
-            <img src="images/atlantis.webp" alt="Atlantis The Palm">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇦🇪 UAE</span>
-                <h2>Atlantis The Palm</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="dubai_museum_of_the_future">
-            <img src="images/museum.webp" alt="Museum of the Future">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇦🇪 UAE</span>
-                <h2>Museum of the Future</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="gardens_by_the_bay_test">
-            <img src="images/garden.webp" alt="Gardens by the Bay">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇸🇬 Singapore</span>
-                <h2>Gardens by the Bay</h2>
-            </div>
-        </div>
-
-        <div class="card monument-card" data-model="saint_basils_cathedral">
-            <img src="images/basil.webp" alt="Saint Basil's Cathedral">
-            <div class="card-gradient-overlay"></div>
-            <div class="selected-badge">Selected</div>
-            <div class="content">
-                <span class="country-label">🇷🇺 Russia</span>
-                <h2>Saint Basil's Cathedral</h2>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="action-footer">
+    <!-- SECTION 2: CATEGORY SELECTION SCREEN -->
+    <div id="categoryScreen" class="category-container hidden">
+      <div class="category-content">
+        <div class="category-icon">🧭</div>
+        <h1 class="category-title">Interactive AI Museum</h1>
+        <p class="category-subtitle">
+          Explore immersive holographic experiences across history and
+          prehistory.
+        </p>
+
+        <div class="category-grid">
+          <button id="monumentsCategoryBtn" class="category-card">
+            <span class="category-emoji">🏛</span>
+            <strong>Explore Monuments</strong>
+          </button>
+          <button id="dinosaursCategoryBtn" class="category-card">
+            <span class="category-emoji">🦖</span>
+            <strong>Explore Dinosaurs</strong>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: MONUMENT AND DINOSAUR SELECTION SCREEN -->
+    <div id="selectionScreen" class="container hidden">
+      <button id="backBtn" class="back-btn hidden" type="button">← Back</button>
+      <div id="monumentPanel" class="selection-panel">
+        <header class="hero-section">
+          <div class="hero-icon">🌍</div>
+          <h1 class="hero-title">AI Hologram Exhibition</h1>
+          <p class="hero-subtitle">
+            Choose a monument to project into the holographic display.
+          </p>
+        </header>
+
+        <div class="monument-grid">
+          <div class="card monument-card selected" data-model="eiffel">
+            <img src="images/Eiffel_Tower.webp" alt="Eiffel Tower" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇫🇷 France</span>
+              <h2>Eiffel Tower</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="bigben">
+            <img src="images/Big_Ben.webp" alt="Big Ben" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇬🇧 United Kingdom</span>
+              <h2>Big Ben</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="statue">
+            <img src="images/Statue_Of_Liberty.webp" alt="Statue of Liberty" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇺🇸 United States</span>
+              <h2>Statue of Liberty</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="christ">
+            <img src="images/christ.webp" alt="Christ the Redeemer" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇧🇷 Brazil</span>
+              <h2>Christ the Redeemer</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="arc">
+            <img src="images/Arc_De_Triomphe.webp" alt="Arc de Triomphe" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇫🇷 France</span>
+              <h2>Arc de Triomphe</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="opera">
+            <img src="images/opera.webp" alt="Sydney Opera House" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇦🇺 Australia</span>
+              <h2>Sydney Opera House</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="burj_khalifa">
+            <img src="images/Burj_Khalifa.webp" alt="Burj Khalifa" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇦🇪 UAE</span>
+              <h2>Burj Khalifa</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="leaning_tower">
+            <img src="images/Leaning_Tower.webp" alt="Leaning Tower of Pisa" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇮🇹 Italy</span>
+              <h2>Leaning Tower of Pisa</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="lotus_temple">
+            <img src="images/lotus.webp" alt="Lotus Temple" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇮🇳 India</span>
+              <h2>Lotus Temple</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="atlantis_the_palm">
+            <img src="images/atlantis.webp" alt="Atlantis The Palm" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇦🇪 UAE</span>
+              <h2>Atlantis The Palm</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card"
+            data-model="dubai_museum_of_the_future"
+          >
+            <img src="images/museum.webp" alt="Museum of the Future" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇦🇪 UAE</span>
+              <h2>Museum of the Future</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="gardens_by_the_bay_test">
+            <img src="images/garden.webp" alt="Gardens by the Bay" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇸🇬 Singapore</span>
+              <h2>Gardens by the Bay</h2>
+            </div>
+          </div>
+
+          <div class="card monument-card" data-model="saint_basils_cathedral">
+            <img src="images/basil.webp" alt="Saint Basil's Cathedral" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">🇷🇺 Russia</span>
+              <h2>Saint Basil's Cathedral</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dinosaurPanel" class="selection-panel hidden">
+        <header class="hero-section">
+          <div class="hero-icon">🦖</div>
+          <h1 class="hero-title">AI Hologram Exhibition</h1>
+          <p class="hero-subtitle">
+            Choose a dinosaur to project into the holographic display.
+          </p>
+        </header>
+
+        <div class="monument-grid dinosaur-grid">
+          <div
+            class="card monument-card dinosaur-card selected"
+            data-model="t_rex"
+          >
+            <img src="dino_images/trex.webp" alt="Tyrannosaurus Rex" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Tyrannosaurus Rex</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card dinosaur-card"
+            data-model="triceratops"
+          >
+            <img src="dino_images/Triceratops.webp" alt="Triceratops" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Triceratops</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card dinosaur-card"
+            data-model="brachiosaurus"
+          >
+            <img src="dino_images/Brachiosaurus.webp" alt="Brachiosaurus" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Brachiosaurus</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card dinosaur-card"
+            data-model="stegosaurus"
+          >
+            <img src="dino_images/Stegosaurus.webp" alt="Stegosaurus" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Stegosaurus</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card dinosaur-card"
+            data-model="velociraptor"
+          >
+            <img src="dino_images/Velociraptor.webp" alt="Velociraptor" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Velociraptor</h2>
+            </div>
+          </div>
+
+          <div
+            class="card monument-card dinosaur-card"
+            data-model="spinosaurus"
+          >
+            <img src="dino_images/Spinosaurus.webp" alt="Spinosaurus" />
+            <div class="card-gradient-overlay"></div>
+            <div class="selected-badge">Selected</div>
+            <div class="content">
+              <span class="country-label">Prehistory</span>
+              <h2>Spinosaurus</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-footer">
         <button id="selectBtn">Display Hologram</button>
+      </div>
     </div>
-</div>
 
-<!-- SECTION 3: UPGRADED PROGRESS & SUCCESS MODALS -->
-<div id="loadingModal" class="modal">
-    <div class="modal-box">
+    <!-- SECTION 3: UPGRADED PROGRESS & SUCCESS MODALS -->
+    <div id="loadingModal" class="modal">
+      <div class="modal-box">
         <div class="icon" id="modalIcon">🗼</div>
         <h2 id="modalTitle">Eiffel Tower Selected</h2>
         <p id="statusText">Connecting to Holographic Display...</p>
         <div class="progress">
-            <div id="progressBar"></div>
+          <div id="progressBar"></div>
         </div>
         <p class="percent" id="percentText">0%</p>
+      </div>
     </div>
-</div>
 
-<div id="readyModal" class="modal">
-    <div class="modal-box">
+    <div id="readyModal" class="modal">
+      <div class="modal-box">
         <div class="icon">🎉</div>
         <h2>Hologram Ready!</h2>
         <p>Please proceed to the hologram display.</p>
         <p>Use your hand to rotate, zoom and interact.</p>
         <p class="enjoy-text">Enjoy the experience.</p>
-        
-        <button id="continueBtn" class="primary-modal-btn">
-            <span>Continue</span>
-            <span class="btn-arrow">→</span>
-        </button>
-    </div>
-</div>
 
-<script type="module" src="script.js"></script>
-</body>
+        <button id="continueBtn" class="primary-modal-btn">
+          <span>Continue</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
 </html>
